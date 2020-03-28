@@ -96,8 +96,8 @@ class PlayingActivity : AppCompatActivity() {
 
         val cord = view.tag.toString() + ticTacToe.currentPlayer.gameValue.toString()
 
-        val circleBool = isAnotherImage(R.drawable.circle, view)
-        val xBool = isAnotherImage(R.drawable.x_mark, view)
+        val circleBool = isDifferentImages(R.drawable.circle, view)
+        val xBool = isDifferentImages(R.drawable.x_mark, view)
 
         putValueField(circleBool, xBool, view, R.drawable.x_mark, GameValues.X)
         putValueField(circleBool, xBool, view, R.drawable.circle, GameValues.O)
@@ -156,7 +156,7 @@ class PlayingActivity : AppCompatActivity() {
     /**
      * Check if drawable image is in input view
      */
-    private fun isAnotherImage(drawableID: Int, view: View): Boolean {
+    private fun isDifferentImages(drawableID: Int, view: View): Boolean {
         return (view as ImageView).drawable.constantState != ResourcesCompat.getDrawable(
             resources,
             drawableID,
