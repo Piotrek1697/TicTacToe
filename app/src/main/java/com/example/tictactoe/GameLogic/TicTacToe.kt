@@ -1,17 +1,18 @@
 class TicTacToe() {
     private var gameArray = arrayOf<Array<GameValues>>()
-    private var players = arrayOf(Player("First", GameValues.EMPTY), Player("Second", GameValues.EMPTY))
-    private var winner: Winner = Winner(GameValues.EMPTY, false)
+    private var players = arrayOf(Player("First", GameValues.X), Player("Second", GameValues.O))
+    var winner: Winner = Winner(GameValues.EMPTY, false)
     private var playWithCPU : Boolean = false
     private var bool: Boolean = false
     var isGameEnd : Boolean = false
+    var currentPlayer = players[bool.toInt()]
     init {
         this.gameArray = Array(3) { Array(3) { GameValues.EMPTY } }
     }
 
     fun reset(){
         gameArray = Array(3) { Array(3) { GameValues.EMPTY } }
-        players = arrayOf(Player("First", GameValues.EMPTY), Player("Second", GameValues.EMPTY))
+        players = arrayOf(Player("First", GameValues.X), Player("Second", GameValues.O))
         winner = Winner(GameValues.EMPTY, false)
         playWithCPU = false
         bool = false
@@ -34,80 +35,29 @@ class TicTacToe() {
      * second number is column number and last character is game value, X or O.
      * After put game value algorithm, that check if someone won, is started.
      */
-    fun game(playWithCPU : Boolean) {
-        val players = arrayOf(Player("First", GameValues.EMPTY), Player("Second", GameValues.EMPTY))
-        var bool: Boolean = false
-        var winner: Winner = Winner(GameValues.EMPTY, false)
-        if (playWithCPU)
-            players[(0..1).random()].name = "Computer" //Draw if player starts or computer
-        while (isAnyEmpty()) {
-            val player = players[bool.toInt()]
-            println("${player.name} player:")
-            val cords = if (playWithCPU && player.name == "Computer")
-                drawCords()
-            else
-                readLine()
-            if (cords != null) {
-                try {
-                    val move = PlayerMove.getMove(cords)
-                    if (player.gameValue == GameValues.EMPTY && players[(!bool).toInt()].gameValue != move.gameValue)
-                        player.gameValue = move.gameValue
-                    if (move.gameValue != player.gameValue)
-                        println("Game value must be same as in first turn")
-                    else {
-                        val proper = makeMove(cords)
-                        if (proper) {
-                            winner = checkWin(cords)
-                            if (winner.win)
-                                break
-                            bool = !bool
-                        } else
-                            println("Please put value in non empty slot")
-                    }
-                } catch (ex: NumberFormatException) {
-                    println("First two string elements must be numbers")
-                } catch (ex1: IllegalArgumentException) {
-                    println("Last argument must be: X or O")
-                } catch (ex2: StringIndexOutOfBoundsException) {
-                    println("Input string must have 3 elements")
-                } catch (ex3: ArrayIndexOutOfBoundsException) {
-                    println("Input numbers must be in range, from 1 to 3")
-                }
-            }
-            printArray(gameArray)
-        }
-        printArray(gameArray)
-        if (winner.win)
-            println("${players[bool.toInt()].name} player (${winner.value}) wins!")
-        else
-            println("Draw, no one won")
-    }
 
-    fun ticTac(playerCords : String?) : Player{
-        val player = players[bool.toInt()]
-        val cords = if (playWithCPU && player.name == "Computer")
-            drawCords()
-        else
-            playerCords
+    fun playGame(playerCords : String?){
+        currentPlayer = players[bool.toInt()]
+        var cords : String? = playerCords
         if (cords != null) {
             val move = PlayerMove.getMove(cords)
-            if (player.gameValue == GameValues.EMPTY && players[(!bool).toInt()].gameValue != move.gameValue)
-                player.gameValue = move.gameValue
-            if (move.gameValue != player.gameValue)
+            if (currentPlayer.gameValue == GameValues.EMPTY && players[(!bool).toInt()].gameValue != move.gameValue)
+                currentPlayer.gameValue = move.gameValue
+            if (move.gameValue != currentPlayer.gameValue)
                 println("Game value must be same as in first turn")
             else {
                 val proper = makeMove(cords)
                 if (proper) {
                     winner = checkWin(cords)
-                    if (winner.win && !isAnyEmpty()){
+                    if (winner.win || !isAnyEmpty()){
                         isGameEnd = true
-                    }
-                    bool = !bool
+                    }else
+                        bool = !bool
                 } else
                     println("Please put value in non empty slot")
             }
         }
-        return players[bool.toInt()]
+        currentPlayer = players[bool.toInt()]
     }
 
     fun initializeTicTac(playWithCPU : Boolean, firstPlayerName : String?, secondPlayerName : String?){
@@ -121,12 +71,12 @@ class TicTacToe() {
             players[0].name = firstPlayerName!!
             players[1].name = secondPlayerName!!
         }
+        currentPlayer = players[0]
     }
 
 
-    private fun drawCords(): String? {
-        val gamesValues = arrayOf(GameValues.X, GameValues.O)
-        return "${(1..3).random()}${(1..3).random()}${gamesValues[(0..1).random()]}"
+    fun drawCords(): String? {
+        return "${(1..3).random()}${(1..3).random()}${GameValues.O}"
     }
 
     private fun isEmpty(playerMove: PlayerMove): Boolean {
