@@ -28,10 +28,8 @@ class PlayingActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try {
-            this.supportActionBar!!.hide()
-        } catch (e: NullPointerException) {
-        }
+        this.supportActionBar!!.hide()
+
         setContentView(R.layout.activity_playing)
 
         moveTextView = findViewById<TextView>(R.id.move_textview)
@@ -144,7 +142,13 @@ class PlayingActivity : AppCompatActivity() {
     /**
      * If all expressions conditions fulfilled, image will be set to specific view
      */
-    private fun putValueField(firstExpr: Boolean, secondExpr: Boolean, view: View, checkedDrawableID: Int, gameValue: GameValues) {
+    private fun putValueField(
+        firstExpr: Boolean,
+        secondExpr: Boolean,
+        view: View,
+        checkedDrawableID: Int,
+        gameValue: GameValues
+    ) {
         if (ticTacToe.currentPlayer.gameValue == gameValue) {
             if (firstExpr && secondExpr)
                 (view as ImageView).setImageResource(checkedDrawableID)
