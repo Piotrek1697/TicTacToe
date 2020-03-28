@@ -10,22 +10,13 @@ class TicTacToe() {
         this.gameArray = Array(3) { Array(3) { GameValues.EMPTY } }
     }
 
-    fun reset(){
+    private fun reset(){
         gameArray = Array(3) { Array(3) { GameValues.EMPTY } }
         players = arrayOf(Player("First", GameValues.X), Player("Second", GameValues.O))
         winner = Winner(GameValues.EMPTY, false)
         playWithCPU = false
         bool = false
         isGameEnd = false
-    }
-
-    private fun playWithComputer(result: String?): Boolean {
-        if (result.isNullOrEmpty())
-            return false
-        else if (result.length == 1 && result[0].toUpperCase() == 'C') {
-            return true
-        }
-        return false
     }
 
     /**
@@ -35,7 +26,6 @@ class TicTacToe() {
      * second number is column number and last character is game value, X or O.
      * After put game value algorithm, that check if someone won, is started.
      */
-
     fun playGame(playerCords : String?){
         currentPlayer = players[bool.toInt()]
         var cords : String? = playerCords
@@ -53,8 +43,7 @@ class TicTacToe() {
                         isGameEnd = true
                     }else
                         bool = !bool
-                } else
-                    println("Please put value in non empty slot")
+                }
             }
         }
         currentPlayer = players[bool.toInt()]
@@ -189,11 +178,6 @@ class TicTacToe() {
             element.column in 1..3 && element.row in 1..3
         }.toMutableList()
     }
-
-    fun getArray(): Array<Array<GameValues>> {
-        return this.gameArray
-    }
-
 
     object PlayerMove {
         var position: Position = Position(0, 0)

@@ -1,5 +1,6 @@
 package com.example.tictactoe
 
+import GameValues
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -10,6 +11,7 @@ import android.content.DialogInterface
 import android.os.Build
 import android.os.Handler
 import android.support.annotation.RequiresApi
+import android.support.v4.content.res.ResourcesCompat
 import android.text.InputType
 import android.util.Log
 import android.view.View
@@ -69,9 +71,9 @@ class PlayingActivity : AppCompatActivity() {
         }
 
         if (playWithCPU)
-            builder?.setMessage("Please put player name")!!.setTitle("User name")
+            builder?.setMessage("Please put your name")!!.setTitle("Player registration")
         else
-            builder?.setMessage("Please put players name, like:\nFirst, Second")!!.setTitle("User name")
+            builder?.setMessage("Please put your names, like:\nFirst, Second")!!.setTitle("Player registration")
         val alertDialog = builder.create()
 
         playerNames.clear()
@@ -86,36 +88,27 @@ class PlayingActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * This function is called when one of game field was clicked.
+     * Non empty field exception handled
+     */
     fun fieldClicked(view: View) {
 
         val cord = view.tag.toString() + ticTacToe.currentPlayer.gameValue.toString()
-        val imageView = view as ImageView
 
-        val circleBool =
-            imageView.drawable.constantState != resources.getDrawable(R.drawable.circle).constantState
-        val xBool =
-            imageView.drawable.constantState != resources.getDrawable(R.drawable.x_mark).constantState
-        if (ticTacToe.currentPlayer.gameValue == GameValues.X) {
-            if (circleBool && xBool)
-                imageView.setImageResource(R.drawable.x_mark)
-            else
-                Log.d("ComputerPlay", "Please put value in non empty slot")
-        }
+        val circleBool = isAnotherImage(R.drawable.circle, view)
+        val xBool = isAnotherImage(R.drawable.x_mark, view)
 
-        if (ticTacToe.currentPlayer.gameValue == GameValues.O) {
-            if (circleBool && xBool)
-                imageView.setImageResource(R.drawable.circle)
-            else
-                Log.d("ComputerPlay", "Please put value in non empty slot")
-        }
+        putValueField(circleBool, xBool, view, R.drawable.x_mark, GameValues.X)
+        putValueField(circleBool, xBool, view, R.drawable.circle, GameValues.O)
 
         ticTacToe.playGame(cord)
+
         if (ticTacToe.currentPlayer.name == "Computer" && !ticTacToe.isGameEnd && !ticTacToe.winner.win) {
             val only = ticTacToe.drawCords()?.split("O")?.get(0)
             val imageID = "image_$only"
             val resID = resources.getIdentifier(imageID, "id", packageName)
-            val image = findViewById<ImageView>(resID) as ImageView
-            fieldClicked(image)
+            fieldClicked(findViewById<ImageView>(resID))
         }
         moveTextView.text =
             "${ticTacToe.currentPlayer.name} move (${ticTacToe.currentPlayer.gameValue})"
@@ -146,6 +139,29 @@ class PlayingActivity : AppCompatActivity() {
                 finish()
             }, 3000)
         }
+    }
+
+    /**
+     * If all expressions conditions fulfilled, image will be set to specific view
+     */
+    private fun putValueField(firstExpr: Boolean, secondExpr: Boolean, view: View, checkedDrawableID: Int, gameValue: GameValues) {
+        if (ticTacToe.currentPlayer.gameValue == gameValue) {
+            if (firstExpr && secondExpr)
+                (view as ImageView).setImageResource(checkedDrawableID)
+            else
+                Log.d("ComputerPlay", "Please put value in non empty slot")
+        }
+    }
+
+    /**
+     * Check if drawable image is in input view
+     */
+    private fun isAnotherImage(drawableID: Int, view: View): Boolean {
+        return (view as ImageView).drawable.constantState != ResourcesCompat.getDrawable(
+            resources,
+            drawableID,
+            null
+        )?.constantState
     }
 
     private fun setAllBlank() {
